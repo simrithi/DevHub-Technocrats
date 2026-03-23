@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+backend/pip/
+backend/fastapi/
+backend/install/
+backend/praw/
+backend/uvicorn/
+backend/ml/models/*.pkl
+node_modules/
+.next/
+*.log

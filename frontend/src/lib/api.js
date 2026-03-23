@@ -1,8 +1,21 @@
-import axios from "axios";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000" });
+export async function getCoins() {
+  const res = await fetch(`${BASE_URL}/api/coins`);
+  return res.json();
+}
 
-export const getCoins = () => api.get("/api/coins").then((r) => r.data);
-export const getCoin = (id) => api.get(`/api/coins/${id}`).then((r) => r.data);
-export const getAlerts = () => api.get("/api/alerts").then((r) => r.data);
-export const getPrediction = (id) => api.get(`/api/predictions/${id}`).then((r) => r.data);
+export async function getCoin(id) {
+  const res = await fetch(`${BASE_URL}/api/coins/${id}`);
+  return res.json();
+}
+
+export async function getAlerts() {
+  const res = await fetch(`${BASE_URL}/api/alerts`);
+  return res.json();
+}
+
+export async function getPrediction(id) {
+  const res = await fetch(`${BASE_URL}/api/predictions/${id}`);
+  return res.json();
+}

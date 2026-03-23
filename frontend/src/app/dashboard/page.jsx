@@ -1,29 +1,57 @@
-import Sidebar from "@/components/dashboard/Sidebar";
-import MetricCard from "@/components/dashboard/MetricCard";
-import HypePhaseTracker from "@/components/dashboard/HypePhaseTracker";
-import AlertFeed from "@/components/dashboard/AlertFeed";
-import PredictionBox from "@/components/dashboard/PredictionBox";
-import Leaderboard from "@/components/dashboard/Leaderboard";
-import AIAnalyst from "@/components/dashboard/AIAnalyst";
-import InfluencerMap from "@/components/dashboard/InfluencerMap";
-import RugRiskMeter from "@/components/dashboard/RugRiskMeter";
+'use client'
 
-export default function DashboardPage() {
+import { useEffect, useState } from "react";
+import { getCoins } from "@/lib/api";
+
+import Header from '@/components/dashboard/Header'
+import Ticker from '@/components/dashboard/Ticker'
+import MarketStats from '@/components/dashboard/MarketStats'
+import HypeCycleList from '@/components/dashboard/HypeCycleList'
+import AIAnalystCard from '@/components/dashboard/AIAnalyst'
+import BottomNav from '@/components/dashboard/BottomNav'
+import AnalyticsOverlay from '@/components/dashboard/AnalyticsOverlay'
+
+const PHASE_COLOR = ['tertiary', 'secondary', 'secondary', 'primary', 'primary']
+const BAR_COLOR   = ['bg-tertiary', 'bg-secondary', 'bg-secondary', 'bg-primary', 'bg-primary']
+
+function normalise(raw) {
+  return raw.map(c => ({
+    id:         c.coin,
+    ticker:     c.coin,
+    name:       c.name,
+    hype_score: c.hype_score,
+    sentiment:  c.sentiment,
+    phase:      c.phase,
+    phaseLabel: c.phase_label,
+    phaseColor: PHASE_COLOR[c.phase] ?? 'secondary',
+    barColor:   BAR_COLOR[c.phase]   ?? 'bg-secondary',
+    progress:   `${c.hype_score}%`,
+  }))
+}
+
+export default function Dashboard() {
+  const [coins, setCoins] = useState([]);
+
+  useEffect(() => {
+    getCoins().then(data => setCoins(normalise(data))).catch(console.error);
+  }, []);
+
   return (
-    <div className="flex h-screen bg-zinc-950 text-white">
-      <Sidebar />
-      <main className="flex-1 overflow-auto p-6 grid grid-cols-3 gap-4">
-        <MetricCard title="Total Coins Tracked" value="1,240" />
-        <MetricCard title="Active Alerts" value="7" />
-        <MetricCard title="Avg Sentiment" value="0.72" />
-        <HypePhaseTracker />
-        <AlertFeed />
-        <PredictionBox />
-        <Leaderboard />
-        <AIAnalyst />
-        <InfluencerMap />
-        <RugRiskMeter />
-      </main>
-    </div>
+    <>
+      <div className="min-h-screen relative">
+        <Header />
+        <Ticker />
+
+        <main className="p-4 space-y-6 pb-32">
+          <MarketStats coins={coins} />
+          <HypeCycleList coins={coins} />
+          <AIAnalystCard />
+        </main>
+
+        <BottomNav />
+      </div>
+
+      <AnalyticsOverlay />
+    </>
   );
 }
